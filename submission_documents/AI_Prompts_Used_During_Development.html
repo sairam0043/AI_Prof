@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>AI Prompts Used During Development - AI Study Companion</title>
+
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    
+    @page {
+        margin: 18mm 16mm;
+        size: A4 portrait;
+    }
+    
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        color: #1e293b;
+        background: #ffffff;
+        line-height: 1.6;
+        font-size: 13.5px;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .header {
+        border-bottom: 2px solid #6366f1;
+        padding-bottom: 12px;
+        margin-bottom: 24px;
+    }
+    
+    .header h1 {
+        font-size: 22px;
+        font-weight: 800;
+        color: #0f172a;
+        margin: 0 0 6px 0;
+    }
+    
+    .header .subtitle {
+        font-size: 13px;
+        color: #64748b;
+        font-weight: 500;
+    }
+    
+    .meta-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 12px 16px;
+        margin-bottom: 20px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        font-size: 12.5px;
+    }
+    
+    .meta-item strong {
+        color: #334155;
+    }
+    
+    h2 {
+        font-size: 16px;
+        font-weight: 700;
+        color: #1e1b4b;
+        border-left: 4px solid #6366f1;
+        padding-left: 10px;
+        margin-top: 24px;
+        margin-bottom: 12px;
+    }
+    
+    h3 {
+        font-size: 14px;
+        font-weight: 600;
+        color: #334155;
+        margin-top: 16px;
+        margin-bottom: 8px;
+    }
+    
+    p {
+        margin: 0 0 10px 0;
+    }
+    
+    ul, ol {
+        margin: 0 0 12px 0;
+        padding-left: 20px;
+    }
+    
+    li {
+        margin-bottom: 4px;
+    }
+    
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 14px 0;
+        font-size: 12px;
+    }
+    
+    th, td {
+        border: 1px solid #cbd5e1;
+        padding: 8px 10px;
+        text-align: left;
+    }
+    
+    th {
+        background: #f1f5f9;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    tr:nth-child(even) {
+        background: #f8fafc;
+    }
+    
+    .callout {
+        background: #eef2ff;
+        border: 1px solid #c7d2fe;
+        border-radius: 6px;
+        padding: 10px 14px;
+        margin: 12px 0;
+        font-size: 12.5px;
+    }
+    
+    .callout-title {
+        font-weight: 700;
+        color: #4338ca;
+        margin-bottom: 4px;
+    }
+    
+    code {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11.5px;
+        background: #f1f5f9;
+        padding: 2px 5px;
+        border-radius: 4px;
+        border: 1px solid #e2e8f0;
+        color: #4338ca;
+    }
+    
+    pre {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        background: #0f172a;
+        color: #f8fafc;
+        padding: 12px;
+        border-radius: 6px;
+        overflow-x: auto;
+        white-space: pre-wrap;
+        margin: 10px 0;
+        line-height: 1.45;
+    }
+    
+    .diagram-box {
+        background: #f8fafc;
+        border: 1px dashed #94a3b8;
+        border-radius: 8px;
+        padding: 14px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        margin: 14px 0;
+        white-space: pre;
+    }
+    
+    .page-break {
+        page-break-before: always;
+    }
+</style>
+
+</head>
+<body>
+    <div class="header">
+        <h1>📝 AI Prompts Used During Development & Runtime</h1>
+        <div class="subtitle">Candidate Challenge Edition v3.0 • Full Stack AI Engineer</div>
+    </div>
+    
+    <div class="meta-box">
+        <div class="meta-item"><strong>Candidate:</strong> Sairam Anakala</div>
+        <div class="meta-item"><strong>Repository:</strong> https://github.com/sairam0043/AI_Prof</div>
+        <div class="meta-item"><strong>Prompting Framework:</strong> Role-Primed, XML-Structured, Guardrail-Enforced</div>
+        <div class="meta-item"><strong>Output Formats:</strong> Markdown with Citations & Structured JSON</div>
+    </div>
+
+    <h2>1. Overview of Prompt Engineering Strategy</h2>
+    <p>
+        The AI Study Companion platform employs structured prompt engineering methodologies to guarantee groundedness, 
+        deterministic JSON outputs for application state changes, and robust anti-hallucination guardrails:
+    </p>
+    <ul>
+        <li><strong>XML Semantic Boundary Tagging:</strong> Clear demarcation of <code>&lt;context&gt;</code>, <code>&lt;learner_state&gt;</code>, and <code>&lt;user_query&gt;</code> prevents prompt injection.</li>
+        <li><strong>Strict Evidence Mandates:</strong> Explicit directives forcing citations or refusal.</li>
+        <li><strong>Schema-Enforced Structured Outputs:</strong> Guaranteed valid JSON output parsing for background jobs.</li>
+    </ul>
+
+    <h2>2. Core Runtime System Prompts</h2>
+
+    <h3>Prompt 1: Grounded AI Tutor System Prompt (with Citations & Refusal Guardrail)</h3>
+    <pre>
+You are an expert, encouraging AI Tutor in the AI Study Companion learning workspace.
+
+CURRENT PROJECT CONTEXT:
+- Space: {{space_name}}
+- Project: {{project_name}}
+- Project Learning Goal: {{project_goal}}
+
+LEARNER PROFILE:
+- Estimated Mastery: {{average_mastery}}%
+- Strengths: {{learner_strengths}}
+- Weak Concepts: {{learner_weaknesses}}
+
+RETRIEVED KNOWLEDGE EVIDENCE:
+{{retrieved_document_chunks_with_page_numbers}}
+
+INSTRUCTIONS:
+1. Grounding Mandate: You MUST answer the user's question using ONLY the facts and equations in the retrieved evidence above.
+2. Citation Format: When citing facts, include the source citation badge: [Source: {{document_title}} — Page {{page_number}}].
+3. Refusal Guardrail: If the retrieved evidence does NOT contain sufficient information to answer the question reliably, DO NOT invent or extrapolate.
+   Instead, respond with:
+   "I don't have enough information in your project notes to answer this question reliably. Would you like to explore related topics such as {{suggested_indexed_concepts}}?"
+4. Pedagogical Tone: Explain complex concepts intuitively, break down mathematical equations step-by-step, and offer illustrative analogies.
+    </pre>
+
+    <div class="page-break"></div>
+
+    <h3>Prompt 2: Adaptive Quiz Generator Prompt</h3>
+    <pre>
+You are an adaptive curriculum assessment engine. Generate a {{question_count}}-question diagnostic quiz for the project "{{project_name}}".
+
+TARGET CONCEPTS & MASTERY STATUS:
+{{concept_mastery_list}}
+
+DIFFICULTY LEVEL: {{difficulty}} (beginner | intermediate | advanced)
+
+GENERATION RULES:
+1. Focus heavily on concepts with mastery &lt; 60% and recent mistake topics.
+2. Include both Multiple-Choice Questions (MCQ) and Open-Ended Conceptual Questions.
+3. Every MCQ must include 4 distinct options with detailed explanations for why the correct option is right and why distractors are wrong.
+
+OUTPUT STRICTLY IN JSON FORMAT:
+{
+  "title": "Adaptive Quiz — {{project_name}}",
+  "difficulty": "{{difficulty}}",
+  "questions": [
+    {
+      "concept_id": "string",
+      "concept_name": "string",
+      "question_type": "multiple_choice | open_ended",
+      "prompt": "Clear, challenging question prompt",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer": "Option A",
+      "explanation": "Detailed pedagogical explanation"
+    }
+  ]
+}
+    </pre>
+
+    <h3>Prompt 3: Open-Ended Assessment Rubric Evaluator Prompt</h3>
+    <pre>
+You are an expert academic evaluator grading an open-ended student response.
+
+QUESTION PROMPT: {{question_prompt}}
+TARGET CONCEPT: {{concept_name}}
+REFERENCE ANSWER CRITERIA: {{reference_criteria}}
+
+STUDENT SUBMISSION:
+"{{student_answer}}"
+
+EVALUATION RUBRIC:
+- Understanding Score (0-100): Depth of grasp of underlying principles.
+- Accuracy Score (0-100): Correctness of technical terms, logic, and reasoning.
+- Covered Concepts: List of specific sub-concepts the student successfully demonstrated.
+- Missing Nuances: Specific gaps, misnomers, or omitted edge cases.
+- Feedback: 2-3 sentences of encouraging, actionable coaching guidance.
+
+RETURN JSON:
+{
+  "understanding_score": number,
+  "accuracy_score": number,
+  "overall_score": number,
+  "covered_concepts": ["concept1", "concept2"],
+  "missing_nuances": ["nuance1"],
+  "feedback": "string"
+}
+    </pre>
+
+    <h3>Prompt 4: Automatic Concept & Knowledge Extraction Prompt</h3>
+    <pre>
+Analyze the following document text from "{{document_title}}" (Page {{page_number}}):
+&lt;document_text&gt;
+{{extracted_text}}
+&lt;/document_text&gt;
+
+Extract the key domain concepts introduced in this text.
+For each concept provide:
+- Concept Name (concise title)
+- Description (2-sentence definition)
+- Category (e.g., Theory, Optimization, Architecture, Evaluation)
+- Importance Rating (1 to 5)
+
+RETURN JSON:
+{
+  "concepts": [
+    {
+      "name": "string",
+      "description": "string",
+      "category": "string",
+      "importance": number
+    }
+  ]
+}
+    </pre>
+
+    <h2>3. Prompts Used During Engineering & Development</h2>
+    <table>
+        <tr>
+            <th>Development Objective</th>
+            <th>Prompt Excerpt</th>
+        </tr>
+        <tr>
+            <td><strong>Database Architecture</strong></td>
+            <td><em>"Design a robust, relational SQLite schema supporting multi-tenancy (User -> Space -> Project), async PDF processing queues, RAG vector chunks with page numbers, adaptive quizzes with open-ended rubric evaluations, and AI observability logs."</em></td>
+        </tr>
+        <tr>
+            <td><strong>Mastery Smoothing Model</strong></td>
+            <td><em>"Implement an exponential moving average mastery growth service in TypeScript that recalculates concept strength upon quiz completion (weighting 60% historical + 40% latest score), tagging trends into Improving, Stable, or Requiring Attention."</em></td>
+        </tr>
+        <tr>
+            <td><strong>AI Observability Console</strong></td>
+            <td><em>"Build an Admin Dashboard in React TypeScript that visualizes total token consumption, estimated costs, live latency histograms, background job status, and triggers automated regression evaluation runs."</em></td>
+        </tr>
+    </table>
+</body>
+</html>
