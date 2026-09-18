@@ -1,6 +1,7 @@
 {
   "name": "ai-study-companion-server",
   "version": "1.0.0",
+  "type": "module",
   "description": "Backend server for AI Study Companion with built-in SQLite, Vector Engine, AI Gateway and Observability",
   "main": "dist/index.js",
   "scripts": {

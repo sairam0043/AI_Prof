@@ -21,7 +21,7 @@ quizRouter.get('/', (req: Request, res: Response) => {
 
 // GET single quiz details
 quizRouter.get('/:id', (req: Request, res: Response) => {
-  const quizId = req.params.id;
+  const quizId = String(req.params.id);
   const quiz = QuizService.getQuiz(quizId);
 
   if (!quiz) {

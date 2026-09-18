@@ -1,8 +1,11 @@
 import express from 'express';
 import cors from 'cors';
 import path from 'node:path';
+import fs from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 import { AppDatabase } from './db/database.js';
+import { seedDatabase } from './db/seed.js';
 import { BackgroundQueue } from './services/background-queue.js';
 import { DocumentProcessor } from './services/document-processor.js';
 import { MasteryService } from './services/mastery-service.js';
@@ -21,6 +24,9 @@ import { evalRouter } from './routes/eval.js';
 
 dotenv.config();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const app = express();
 const PORT = process.env.PORT || 3001;
 
@@ -30,10 +36,23 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Static uploads serving
-app.use('/uploads', express.static(path.resolve(process.cwd(), 'uploads')));
+const uploadsDir = path.resolve(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadsDir));
 
-// Initialize DB
+// Initialize DB & Auto-seed on first launch if empty
 AppDatabase.getDB();
+try {
+  const userCount = AppDatabase.query<{ c: number }>('SELECT count(*) as c FROM users')[0]?.c || 0;
+  if (userCount === 0) {
+    console.log('[Database] Empty database detected. Auto-seeding initial study companion data...');
+    seedDatabase();
+  }
+} catch (e) {
+  console.warn('[Database] Seed check warning:', e);
+}
 
 // Register Background Handlers
 BackgroundQueue.registerHandler('process_document', async (payload) => {
@@ -72,6 +91,26 @@ app.get('/api/health', (req, res) => {
     features: ['grounded_tutor', 'adaptive_quiz', 'concept_mastery', 'growth_analytics', 'observability']
   });
 });
+
+// Serve Frontend Static Build in Production
+const possibleDistPaths = [
+  path.resolve(process.cwd(), 'client/dist'),
+  path.resolve(process.cwd(), '../client/dist'),
+  path.resolve(__dirname, '../../client/dist'),
+  path.resolve(__dirname, '../../../client/dist')
+];
+const clientDistPath = possibleDistPaths.find((p) => fs.existsSync(p));
+
+if (clientDistPath) {
+  console.log(`[Static] Serving React frontend from ${clientDistPath}`);
+  app.use(express.static(clientDistPath));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next();
+    }
+    res.sendFile(path.join(clientDistPath, 'index.html'));
+  });
+}
 
 app.listen(PORT, () => {
   console.log(`[AI Study Companion Server] Running on http://localhost:${PORT}`);
