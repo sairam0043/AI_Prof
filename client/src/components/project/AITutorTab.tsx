@@ -32,9 +32,14 @@ export const AITutorTab: React.FC = () => {
     if (!activeProjectId) return;
     try {
       const data = await api.getConversations(activeProjectId);
-      setConversations(data.conversations || []);
-      if (data.conversations?.length > 0 && !activeConvId) {
+      if (data.conversations && data.conversations.length > 0) {
+        setConversations(data.conversations);
         setActiveConvId(data.conversations[0].id);
+      } else {
+        const title = `Session ${new Date().toLocaleDateString()}`;
+        const newConv = await api.createConversation(activeProjectId, title);
+        setConversations([newConv.conversation]);
+        setActiveConvId(newConv.conversation.id);
       }
     } catch (err) {
       console.error('Failed to load conversations:', err);
@@ -77,14 +82,28 @@ export const AITutorTab: React.FC = () => {
     }
   };
 
-  const handleSendMessage = (textToSend?: string) => {
+  const handleSendMessage = async (textToSend?: string) => {
     const message = textToSend || inputMessage;
-    if (!message.trim() || !activeConvId || !activeProjectId || isStreaming) return;
+    if (!message.trim() || !activeProjectId || isStreaming) return;
+
+    let targetConvId = activeConvId;
+    if (!targetConvId) {
+      try {
+        const title = `Session ${new Date().toLocaleDateString()}`;
+        const data = await api.createConversation(activeProjectId, title);
+        targetConvId = data.conversation.id;
+        setConversations((prev) => [data.conversation, ...prev]);
+        setActiveConvId(targetConvId);
+      } catch (err) {
+        console.error('Failed to auto-create conversation:', err);
+        return;
+      }
+    }
 
     // Optimistic user message addition
     const userMsg: Message = {
       id: `temp_${Date.now()}`,
-      conversation_id: activeConvId,
+      conversation_id: targetConvId,
       role: 'user',
       content: message,
       created_at: new Date().toISOString()
@@ -96,7 +115,7 @@ export const AITutorTab: React.FC = () => {
     setStreamedText('');
 
     api.streamChat(
-      activeConvId,
+      targetConvId,
       activeProjectId,
       message,
       (chunk) => {
@@ -107,10 +126,28 @@ export const AITutorTab: React.FC = () => {
         setStreamedText('');
         setMessages((prev) => [...prev, finalMessage]);
       },
-      (error) => {
-        setIsStreaming(false);
-        setStreamedText('');
-        console.error('Tutor stream error:', error);
+      async (error) => {
+        console.warn('Streaming failed, attempting standard chat fallback:', error);
+        try {
+          const res = await api.chat(targetConvId!, activeProjectId, message);
+          setIsStreaming(false);
+          setStreamedText('');
+          if (res.response) {
+            setMessages((prev) => [...prev, res.response]);
+          }
+        } catch (fallbackErr: any) {
+          setIsStreaming(false);
+          setStreamedText('');
+          console.error('Fallback chat failed:', fallbackErr);
+          const errMsg: Message = {
+            id: `err_${Date.now()}`,
+            conversation_id: targetConvId!,
+            role: 'tutor',
+            content: `⚠️ Failed to generate tutor response: ${fallbackErr.message || 'Please check your connection and try again.'}`,
+            created_at: new Date().toISOString()
+          };
+          setMessages((prev) => [...prev, errMsg]);
+        }
       }
     );
   };
@@ -230,7 +267,7 @@ export const AITutorTab: React.FC = () => {
         {/* Message Thread */}
         <div style={{ flex: 1, overflowY: 'auto', padding: '24px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
           {messages.map((msg) => {
-            const isTutor = msg.role === 'tutor';
+            const isTutor = msg.role !== 'user';
             return (
               <div
                 key={msg.id}
