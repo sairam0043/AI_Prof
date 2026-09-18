@@ -1,0 +1,17 @@
+{
+  "name": "ai-study-companion",
+  "version": "3.0.0",
+  "description": "AI-Powered Learning & Growth Workspace - Candidate Challenge v3.0",
+  "private": true,
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "seed": "cd server && npm run seed",
+    "eval": "cd server && npm run eval",
+    "build": "cd server && npm run build && cd ../client && npm run build"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
